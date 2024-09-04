@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+} */
+
+/* col {
+  text-align: center;
+  font-family: "Montserrat"
+}
+
+img {
+  opacity: 10%;
+}
+
+.montserrat-test {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* .sidebar {
+  background: #293d2e;
+  color: #FFFFFF;
+  min-height: 100vh;
+  font-family: "Montserrat";
+  text-align: center;
+  justify-content: center;
+}
+
+.row {
+  width: 100%;
+  margin-top: auto !important;
+  margin-bottom: auto;
+} */
+
+svg {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+svg:hover {
+  color: #cc6816;
+}
+
+.container-fluid {
+  justify-content: center;
+}
+
+.card {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0px;
+  padding-right: 0px;
+  /* font-family: "Montserrat"; */
+}
+
+.card-img {
+  height: 300px;
+}
+
+/* p {
+  font-family: "Montserrat"
+} */
+
+.nav-link:hover {
+  color: #cc6816; 
+}
+
+.card:hover .card-title {
+  color: #cc6816; 
+}
+
+.card:hover .text-muted {
+  color: #cc6816 !important; 
+}
+
+.navbar {
+  /* background-color: #293d2e; */
+  /* font-family: "Montserrat"; */
+  height: 10vh;
+}
+
+.care-button {
+  background-color: var(--bg-primary) !important;
+  text-color: inherit;
+}
+.navbar .container {
+  background-color: var(--bs-primary);
+}
+
+.themeButton {
+  background-color: #1a1a1a !important;
+  /* color: #cc6816; */
+  border-width: 0;
+}
+
+.themeButton:hover {
+  background-color: #1a1a1a !important;
+}
+
+.themeButton:hover path {
+  fill: #cc6816 !important;
+}
+
+.themeButton:active {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+/* path {
+  fill: #ffffff !important;
+} */
+
+path:hover {
+  fill: #cc6816 !important;
+}
+
+/* @layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} */
+
+.card:hover img {
+  filter: opacity(10%);
+  transition: .5 ease;
+}
