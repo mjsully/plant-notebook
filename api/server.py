@@ -60,26 +60,28 @@ def get_session():
     session = Session()
     return session 
 
+def get_timestamp_data(session, id, type, relative=False):
+
+    results = session.query(
+        models.Care
+    ).where(
+        models.Care.plantid == id,
+        models.Care.type == type
+    ).order_by(
+        models.Care.timestamp.desc()
+    ).all()
+    if results == []:
+        return "Unknown"
+    else:
+        if relative:
+            return (datetime.now() - results[0].timestamp).days
+        else: 
+            return results[0].timestamp.strftime('%d/%m/%Y')
+
 @app.get('/plants')
 async def plants_get():
 
-    def get_timestamp_data(session, id, type, relative=False):
-
-        results = session.query(
-            models.Care
-        ).where(
-            models.Care.plantid == id,
-            models.Care.type == type
-        ).order_by(
-            models.Care.timestamp.desc()
-        ).all()
-        if results == []:
-            return "Unknown"
-        else:
-            if relative:
-                return (datetime.now() - results[0].timestamp).days
-            else: 
-                return results[0].timestamp.strftime('%d/%m/%Y')
+    """ Test docstring """
 
     session = get_session()
 
@@ -87,79 +89,71 @@ async def plants_get():
         models.Plants
     ).all()
 
-    logging.debug(results)
-    results_list = []
-    for result in results:
-        logging.debug(result)
-        get_timestamp_data(session, result.id, "water")
-        results_dict = {
-            "id": result.id, 
-            "name": result.name,
-            "location": result.location,
-            "notes": result.notes,
-            "url": result.url,
-            "added": result.added.strftime('%d/%m/%Y'),
-            "watered": get_timestamp_data(session, result.id, "water", False),
-            "misted": get_timestamp_data(session, result.id, "mist", False),
-            "fed": get_timestamp_data(session, result.id, "food", False),
-            "watered_days_ago": get_timestamp_data(session, result.id, "water", True),
-            "misted_days_ago": get_timestamp_data(session, result.id, "mist", True),
-            "fed_days_ago": get_timestamp_data(session, result.id, "food", True)
-        }
-        results_list.append(results_dict)
+    try:
 
-    return results_list
+        results_list = []
+        for result in results:
+            results_dict = {
+                "id": result.id, 
+                "name": result.name,
+                "location": result.location,
+                "notes": result.notes,
+                "url": result.url,
+                "added": result.added.strftime('%d/%m/%Y'),
+                "watered": get_timestamp_data(session, result.id, "water", False),
+                "misted": get_timestamp_data(session, result.id, "mist", False),
+                "fed": get_timestamp_data(session, result.id, "food", False),
+                "watered_days_ago": get_timestamp_data(session, result.id, "water", True),
+                "misted_days_ago": get_timestamp_data(session, result.id, "mist", True),
+                "fed_days_ago": get_timestamp_data(session, result.id, "food", True)
+            }
+            results_list.append(results_dict)
+
+        return JSONResponse(status_code=200, content=results_list)
+
+    except Exception as e:
+
+        logging.error(e)
+        return JSONResponse(status_code=500, content=str(e))
 
 @app.get('/plant/{id}')
 async def plant_get(id: int):
 
-    def get_timestamp_data(session, id, type, relative=False):
-
-        results = session.query(
-            models.Care
-        ).where(
-            models.Care.plantid == id,
-            models.Care.type == type
-        ).order_by(
-            models.Care.timestamp.desc()
-        ).all()
-        if results == []:
-            return "Unknown"
-        else:
-            if relative:
-                return (datetime.now() - results[0].timestamp).days
-            else: 
-                return results[0].timestamp.strftime('%d/%m/%Y')
-
     session = get_session()
 
-    result = session.query(
-        models.Plants
-    ).where(
-        models.Plants.id == id
-    ).one()
+    try:
 
-    logging.debug(result)
-    results_dict = {}
-    if result != None:
-        logging.debug(result)
-        get_timestamp_data(session, result.id, "water")
-        results_dict = {
-            "id": result.id, 
-            "name": result.name,
-            "location": result.location,
-            "notes": result.notes,
-            "url": result.url,
-            "added": result.added.strftime('%d/%m/%Y'),
-            "watered": get_timestamp_data(session, result.id, "water", False),
-            "misted": get_timestamp_data(session, result.id, "mist", False),
-            "fed": get_timestamp_data(session, result.id, "food", False),
-            "watered_days_ago": get_timestamp_data(session, result.id, "water", True),
-            "misted_days_ago": get_timestamp_data(session, result.id, "mist", True),
-            "fed_days_ago": get_timestamp_data(session, result.id, "food", True)
-        }
+        result = session.query(
+            models.Plants
+        ).where(
+            models.Plants.id == id
+        ).one_or_none()
 
-    return results_dict
+        if result == None:
+            return JSONResponse(status_code=404, content="No record in DB.")
+
+        else:
+            results_dict = {
+                "id": result.id, 
+                "name": result.name,
+                "location": result.location,
+                "notes": result.notes,
+                "url": result.url,
+                "added": result.added.strftime('%d/%m/%Y'),
+                "watered": get_timestamp_data(session, result.id, "water", False),
+                "misted": get_timestamp_data(session, result.id, "mist", False),
+                "fed": get_timestamp_data(session, result.id, "food", False),
+                "watered_days_ago": get_timestamp_data(session, result.id, "water", True),
+                "misted_days_ago": get_timestamp_data(session, result.id, "mist", True),
+                "fed_days_ago": get_timestamp_data(session, result.id, "food", True)
+            }
+
+            return JSONResponse(status_code=200, content=results_dict)
+    
+    except Exception as e:
+
+        logging.error(e)
+        return JSONResponse(status_code=500, content=str(e))
 
 @app.patch('/plant/{id}')
 async def plant_patch(id: int, request: Request):
