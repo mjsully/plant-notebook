@@ -1,5 +1,8 @@
 import os
 from dataclasses import dataclass
+
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +15,14 @@ from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    initialise()
+    yield
+    logging.debug("Exiting!")
+
+app = FastAPI(lifespan=lifespan)
 logging.basicConfig(level=logging.DEBUG)
 
 app.add_middleware(
@@ -49,13 +59,6 @@ def get_session():
     Session = sessionmaker(bind=engine)
     session = Session()
     return session 
-
-# schema
-@app.get('/')
-def home():
-
-    initialise()
-    return ('', 200)
 
 @app.get('/plants')
 async def plants_get():
@@ -316,7 +319,6 @@ async def plants_post(request: Request):
         logging.error(e)
         return JSONResponse(status_code=400, content="Something went wrong")
         
-
 @app.post('/plant/{id}/care')
 async def plant_care_post(request: Request):
 
